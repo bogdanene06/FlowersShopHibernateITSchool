@@ -24,6 +24,5 @@ My project is a simple application for managing products, clients, and orders. I
 
 
 ## Requirements:
-- Java SDK 21: https://www.oracle.com/ro/java/technologies/downloads/;
+- Java 20: https://www.oracle.com/ro/java/technologies/downloads/;
 - XAMPP (or other Apache HTTP Server and MySQL database manager): https://www.apachefriends.org/.
-- 
