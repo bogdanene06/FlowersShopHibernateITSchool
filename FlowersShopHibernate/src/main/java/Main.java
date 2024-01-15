@@ -12,7 +12,7 @@ import utils.OrdersOperations;
 import utils.ProductsOperations;
 
 import java.util.*;
-// comment for Github from Bogdan Ene
+// comment for GitHub from Bogdan Ene
 @Setter
 @Getter
 @Log
@@ -106,7 +106,6 @@ public class Main {
                 log.warning("Invalid CHARACTER on choosing main menu options. Type a NUMBER between 1 to 4!");
             }
         } while (!exitApplication);
-        scanner.close();
     }
 
     private static boolean exitingApplication(Scanner scanner) {

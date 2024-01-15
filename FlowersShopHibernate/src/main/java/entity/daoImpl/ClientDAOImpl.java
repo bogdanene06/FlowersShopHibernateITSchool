@@ -56,8 +56,7 @@ public class ClientDAOImpl implements ClientDAO {
         try {
             Query<Client> query = session.createQuery("FROM Client c WHERE c.name LIKE :name", Client.class);
             query.setParameter("name", "%" + name + "%");
-            List<Client> clients = query.list();
-            return clients;
+            return query.getResultList();
         } finally {
             closeSession();
         }

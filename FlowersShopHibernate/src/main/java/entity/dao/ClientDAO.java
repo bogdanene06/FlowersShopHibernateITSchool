@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface ClientDAO {
 
     void createClient();
-    public Optional<Client> getClientByName(String name);
+    Optional<Client> getClientByName(String name);
     List<Client> findAllClients();
 
     Optional<Client> findClientById();

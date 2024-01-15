@@ -90,9 +90,44 @@ public class ProductDAOImpl implements ProductDAO {
         return Optional.empty();
     }
 
-    @Override
-    public void updateProductById(Product Product) {
 
+    public Optional<Product> findProductById(int productId) {
+        openSession();
+        try {
+            return Optional.ofNullable(session.get(Product.class, productId));
+        } finally {
+            closeSession();
+        }
+    }
+
+    @Override
+    public void updateProductById(Product updatedProduct) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Optional<Product> existingProduct = findProductByIdToUpdate(session);
+                if (existingProduct.isPresent()) {
+                    Product oldProduct = existingProduct.get();
+
+                    log.info("Old Product details: " + oldProduct);
+                    log.info("New Product details: " + updatedProduct);
+
+                    oldProduct.setName(updatedProduct.getName());
+                    oldProduct.setPrice(updatedProduct.getPrice());
+
+                    session.merge(oldProduct);
+                    transaction.commit();
+                    log.info("The product with the ID " + oldProduct.getId() + " has been successfully updated.");
+                } else {
+                    log.warning("Product with the provided ID not found.");
+                }
+            } catch (Exception e) {
+                if (transaction != null && transaction.isActive()) {
+                    transaction.rollback();
+                }
+                log.warning("Failed to update the product. Please check the provided information. Error: " + e.getMessage());
+            }
+        }
     }
 
     public List<Product> getProductsInOrder(int orderId) {
@@ -130,25 +165,39 @@ public class ProductDAOImpl implements ProductDAO {
         } catch (NoSuchElementException e) {
             log.warning("The product with the provided ID does NOT exist in the database.");
         } finally {
+            scanner.nextLine();
             commitTransactionAndCloseSession();
         }
     }
 
     public Optional<Product> findProductByIdToUpdate() {
-        openSession();
+        try (Session session = sessionFactory.openSession()) {
+            openSession();
+            return findProductByIdToUpdate(session);
+        }
+    }
+
+    public Optional<Product> findProductByIdToUpdate(Session session) {
         try {
+            if (session == null || !session.isOpen()) {
+                log.warning("Session is not open or is null.");
+                return Optional.empty();
+            }
+
             System.out.print("Insert the product's ID you want to modify: ");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
+                scanner.nextLine();
                 System.out.println();
                 Optional<Product> product = Optional.ofNullable(session.find(Product.class, id));
                 return product;
             } else {
-                log.warning("The product with the provided ID does NOT exist in the database.");
+                log.warning("Invalid input. Please enter a valid number for the product ID.");
                 return Optional.empty();
             }
-        } finally {
-            closeSession();
+        }
+        finally {
+
         }
     }
 

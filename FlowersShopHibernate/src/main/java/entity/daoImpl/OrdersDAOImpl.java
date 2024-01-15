@@ -190,7 +190,15 @@ public class OrdersDAOImpl implements OrdersDAO {
                 String newSenderName = scanner.nextLine();
                 orders.setSenderName(newSenderName);
 
+                // Generare produse noi și salvare înainte de a le asocia comenzii
                 List<Product> newProducts = generateRandomProducts(faker.number().numberBetween(1, 10));
+                for (Product product : newProducts) {
+                    // Verifică dacă produsul are deja un ID asignat (există în baza de date)
+                    if (product.getId() == 0) {
+                        // Dacă nu are ID, salvează-l înainte de asociere
+                        session.save(product);
+                    }
+                }
                 orders.setProducts(newProducts);
 
                 session.merge(orders);
@@ -200,7 +208,8 @@ public class OrdersDAOImpl implements OrdersDAO {
                 log.warning("The specified orders ID does not exist.");
             }
         } catch (Exception e) {
-            log.warning("Failed to update the order.");
+            log.warning("Failed to update the order. Exception details: " + e.getMessage());
+            e.printStackTrace(); // Adaugă această linie pentru a afișa stack trace-ul complet al excepției
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }

@@ -144,6 +144,7 @@ public class OrdersOperations {
                         System.out.print("Insert the client's ID to view his/hers orders: ");
                         if (scanner.hasNextInt()) {
                             int clientId = scanner.nextInt();
+                            scanner.nextLine();
                             List<Orders> clientOrders = ordersDAO.findAllOrdersByClientId(clientId);
 
                             if (clientOrders.isEmpty()) {

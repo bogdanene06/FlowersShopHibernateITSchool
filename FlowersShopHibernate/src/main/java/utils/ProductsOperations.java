@@ -50,7 +50,7 @@ public class ProductsOperations {
                         System.out.print("Type in the number of products you want to insert in the database: ");
                         if (scanner.hasNextInt()) {
                             int x = scanner.nextInt();
-                            scanner.nextInt();
+                            scanner.nextLine();
 
                             for (int i = 0; i < x; i++) {
                                 Product product = new Product();
@@ -63,7 +63,8 @@ public class ProductsOperations {
                             } else if (x > 1) {
                                 log.info("The products have been successfully created.");
                             } else {
-                                log.warning("Number of products cannot be NEGATIVE. Please insert a number above 0 (zero)!");
+                                log.warning("Invalid CHARACTER on \"Creating product\". You should type a NUMBER!");
+                                scanner.nextLine();
                             }
                         } else {
                             log.warning("Invalid CHARACTER on \"Creating product\". You should type a NUMBER!");
@@ -76,14 +77,26 @@ public class ProductsOperations {
                         break;
 
                     case 3:
-                        System.out.println(productDAO.findProductById());
+                        System.out.print("Enter the product ID: ");
+                        if (scanner.hasNextInt()) {
+                            int productId = scanner.nextInt();
+                            Optional<Product> product = productDAO.findProductById(productId);
+                            if (product.isPresent()) {
+                                System.out.println("Product details: " + product.get());
+                            } else {
+                                log.warning("Product with ID " + productId + " not found.");
+                            }
+                        } else {
+                            log.warning("Invalid CHARACTER on \"View product details by ID\". You should type a NUMBER!");
+                            scanner.nextLine(); // Consuming the invalid input
+                        }
                         break;
 
                     case 4:
                         Optional<Product> optionalProduct = productDAO.findProductByIdToUpdate();
                         if (optionalProduct.isPresent()) {
                             Product productToUpdate = optionalProduct.get();
-                            productToUpdate.setName("Product name modified");
+                            productToUpdate.setName("Product name modified.");
                             productToUpdate.setPrice(999F);
                             productDAO.updateProductById(productToUpdate);
                         } else {
